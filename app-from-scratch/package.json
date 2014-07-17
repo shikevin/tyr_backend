@@ -9,7 +9,11 @@
     "mongoskin": "~0.6.1",
     "stylus": "~0.44.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "~1.16.2",
+    "superagent": "~0.15.7",
+    "expect.js": "~0.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
