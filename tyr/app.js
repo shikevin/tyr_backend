@@ -6,7 +6,8 @@ var User = mongoose.model('User', { name:String });
 
 var newUser = new User({ name: 'Kevin Shi' });
 
-var userSChema = mongoose.Schema({
+
+var userSchema = mongoose.Schema({
     name: String
 });
 
