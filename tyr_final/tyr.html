@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Tyr chat</title>
+    <link rel="stylesheet" href="/public/stylesheets/style.css" type="text/css">
+</head>
+
+<body>
+<div id="EnterRoom">
+    <p>Enter a chatroom:</p>
+    <p id="roomStatus"></p>
+    <form id="setRoom">
+        <input size="35" id="roomName">
+        <input type="submit">
+    </form>
+</div>
+
+<div id="EnterUsername">
+    <p>Enter a username:</p>
+    <p id="currentUsers"></p>
+    <form id="setUsername">
+        <input size="35" id="username">
+        <input type="submit">
+    </form>
+</div>
+
+<div id="EnterData">
+    <p>Enter a message:</p>
+        <form id="sendMessage">
+            <input size=35" id="message">
+            <input type="submit">
+        </form>
+    <div id="chat"></div>
+</div>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/javascript/chat.js"></script>
+
+</body>
+</html>

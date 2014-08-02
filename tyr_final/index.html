@@ -13,6 +13,13 @@
             float: left;
             border: 1px #000 solid;
         }
+        .error{
+            colour: red;
+        }
+        .whisper{
+            color: grey;
+            font-style:italic;
+        }
     </style>
 </head>
 <body>
@@ -62,21 +69,37 @@
             $nickBox.val('');
         });
 
+        socket.on('load old msgs', function(docs){
+            for(var i=0; i<docs.length; i++) {
+                displayMsg(docs[i]);
+            }
+        });
+
         socket.on('usernames', function(data){
             var html ='';
-            for(i=0;i<data.length;i++){
+            for(var i=0;i<data.length;i++){
                 html += data[i]+'<br/>'
                 $users.html(html);
             }
+        });
+
+        socket.on('whisper', function(data){
+            $chat.append('<span class="whisper"><b>' + data.nick + '</b>' + ': ' + data.msg+'</span><br/>');
         })
         $messageForm.submit(function(e){
             e.preventDefault();
-            socket.emit('send message', $messageBox.val());
+            socket.emit('send message', $messageBox.val(), function(data){ //callback for errors during submit
+                $chat.append('<span class="error"><b>' + data +'</span><br/>');
+            });
             $messageBox.val('');
         });
 
+        function displayMsg(data){
+            $chat.append('<span class="msg"><b>' + data.nick + '</b>' + ': ' + data.msg+'</span><br/>');
+        }
+
         socket.on('new message', function(data){
-            $chat.append('<b>' + data.nick + '</b>' + ': ' + data.msg+"<br/>");
+            displayMsg(data);
         });
     });
 </script>

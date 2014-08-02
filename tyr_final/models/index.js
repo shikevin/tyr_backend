@@ -1,0 +1,1 @@
+exports.Meetup = require('./meetup');
