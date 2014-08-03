@@ -39,6 +39,8 @@ app.get('/', function(req, res){
     res.sendfile(__dirname + '/tyr.html')
 });
 
+io.set('log level', 2);
+
 io.sockets.on('connection', function(socket){
 //    var query = Chat.find({});
 //    query.sort('-created').limit(8).exec(function(err,docs){
@@ -48,23 +50,56 @@ io.sockets.on('connection', function(socket){
 
     socket.on('join room', function(data, callback){
        if (data in rooms){
-           socket.room = data;
-           rooms[socket.room]++;
-           callback("joined existing room: " + socket.room + " with: "
-                + rooms[socket.room] + " connections");
+           socket.room = {};
+           socket.room['name'] = data;
+           socket.room['users'] = rooms[data]['users'];
+           rooms[data]['people']++;
+           socket.join(data);
+           callback("joined existing room: " + rooms[data]['name'] + " with: "
+                + rooms[data]['people'] + " connections");
        } else {
-           socket.room = data;
-           rooms[socket.room] = 1;
-           callback("created new room: " + socket.room);
+           socket.room = {};
+           socket.room['name'] = data;
+           socket.room['people'] = 1;
+           socket.room['users'] = {};
+           rooms[data] = socket.room;
+           socket.join(data);
+           callback("created new room: " + socket.room['name']);
        }
     });
 
+    function updateSessionUsers(){
+        io.sockets.in(socket.room['name']).emit('usernames', Object.keys(rooms[socket.room['name']]['users']));
+        console.log(Object.keys(rooms[socket.room['name']]['users']));
+    }
+
+    function updateSessionLocations(username) {
+        io.sockets.in(socket.room['name']).emit('location change',
+            username + ": " + rooms[socket.room['name']]['users'][username]['location']);
+    }
+
     socket.on('new user', function(data, callback){
-
+        if (!socket.room) {
+            callback("Error, have not joined a room");
+        } else {
+            if (data in rooms[socket.room['name']]['users']) {
+                console.log(rooms[socket.room['name']]['users']);
+                callback("Error, name has been taken");
+            } else {
+                socket.name = data;
+                rooms[socket.room['name']]['users'][data] = {};
+                updateSessionUsers();
+            }
+        }
     });
-    
-    socket.on('new location', function(data, callback){
 
+    socket.on('new location', function(data, callback){
+        if(!socket.name) {
+            callback("Error, please enter a name");
+        } else {
+            rooms[socket.room['name']]['users'][socket.name]['location'] = data;
+            updateSessionLocations(socket.name);
+        }
     });
 
 //    socket.on('new user', function(data, callback){
