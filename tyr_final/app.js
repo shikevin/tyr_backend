@@ -49,33 +49,42 @@ io.sockets.on('connection', function(socket){
 //    });
 
     socket.on('join room', function(data, callback){
-       if (data in rooms){
-           socket.room = {};
-           socket.room['name'] = data;
-           socket.room['users'] = rooms[data]['users'];
-           rooms[data]['people']++;
-           socket.join(data);
-           callback("joined existing room: " + rooms[data]['name'] + " with: "
+        if (data in rooms){
+            socket.room = {};
+            socket.room['name'] = data;
+            socket.room['users'] = rooms[data]['users'];
+            rooms[data]['people']++;
+            socket.join(data);
+            updateSessionUsers();
+            loadMessages();
+            callback("joined existing room: " + rooms[data]['name'] + " with: "
                 + rooms[data]['people'] + " connections");
-       } else {
-           socket.room = {};
-           socket.room['name'] = data;
-           socket.room['people'] = 1;
-           socket.room['users'] = {};
-           rooms[data] = socket.room;
-           socket.join(data);
-           callback("created new room: " + socket.room['name']);
-       }
+        } else {
+            socket.room = {};
+            socket.room['name'] = data;
+            socket.room['people'] = 1;
+            socket.room['users'] = {};
+            rooms[data] = socket.room;
+            socket.join(data);
+            updateSessionUsers();
+            callback("created new room: " + socket.room['name']);
+        }
     });
 
     function updateSessionUsers(){
         io.sockets.in(socket.room['name']).emit('usernames', Object.keys(rooms[socket.room['name']]['users']));
-        console.log(Object.keys(rooms[socket.room['name']]['users']));
+    }
+
+    function loadMessages() {
+        for (var user in rooms[socket.room['name']]['users']) {
+            socket.emit('location change',
+                {name: user, location: rooms[socket.room['name']]['users'][user] });
+        }
     }
 
     function updateSessionLocations(username) {
         io.sockets.in(socket.room['name']).emit('location change',
-            { name: username, location: rooms[socket.room['name']]['users'][username]['location'] });
+            { name: username, location: rooms[socket.room['name']]['users'][username] });
     }
 
     socket.on('new user', function(data, callback){
@@ -87,7 +96,7 @@ io.sockets.on('connection', function(socket){
                 callback("Error, name has been taken");
             } else {
                 socket.name = data;
-                rooms[socket.room['name']]['users'][data] = {};
+                rooms[socket.room['name']]['users'][data] = '';
                 updateSessionUsers();
             }
         }
@@ -97,7 +106,7 @@ io.sockets.on('connection', function(socket){
         if(!socket.name) {
             callback("Error, please enter a name");
         } else {
-            rooms[socket.room['name']]['users'][socket.name]['location'] = data;
+            rooms[socket.room['name']]['users'][socket.name] = data;
             updateSessionLocations(socket.name);
         }
     });
