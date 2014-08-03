@@ -23,7 +23,7 @@ jQuery(function($){
         socket.emit('new user', $userBox.val(), function(data){
             $userStatus.html(data);
         });
-        $userBox.val();
+        $userBox.val('');
     });
 
     socket.on('usernames', function(data){
