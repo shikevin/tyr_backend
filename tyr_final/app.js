@@ -102,6 +102,17 @@ io.sockets.on('connection', function(socket){
         }
     });
 
+    socket.on('disconnect', function(data){
+        if(!socket.name) return;
+        delete rooms[socket.room['name']]['users'][socket.name];
+        rooms[socket.room['name']]['people']--;
+        if (rooms[socket.room['name']]['people'] == 0) {
+            delete rooms[socket.room['name']];
+            return;
+        }
+        updateSessionUsers();
+    })
+
 //    socket.on('new user', function(data, callback){
 //        if(data in users){
 //            callback(false);
