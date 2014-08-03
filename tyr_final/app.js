@@ -75,7 +75,7 @@ io.sockets.on('connection', function(socket){
 
     function updateSessionLocations(username) {
         io.sockets.in(socket.room['name']).emit('location change',
-            username + ": " + rooms[socket.room['name']]['users'][username]['location']);
+            { name: username, location: rooms[socket.room['name']]['users'][username]['location'] });
     }
 
     socket.on('new user', function(data, callback){

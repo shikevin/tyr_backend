@@ -6,6 +6,9 @@ jQuery(function($){
     var $userForm = $('#setUsername');
     var $userBox = $('#username');
     var $userStatus = $('#currentUsers');
+    var $messageForm = $('#sendMessage');
+    var $messageBox = $('#message');
+    var $chat = $('#chat');
 
     $roomForm.submit(function(oEvent){
         oEvent.preventDefault();
@@ -31,6 +34,21 @@ jQuery(function($){
         }
     });
 
+    $messageForm.submit(function(oEvent){
+        oEvent.preventDefault();
+        socket.emit('new location', $messageBox.val(), function(data){
+            $chat.append('<span class="error"><b>' + data + '</span></b>');
+        });
+        $messageBox.val('');
+    });
+
+    function displayMsg(data){
+        $chat.append('<span class="msg"><b>' + data.name + '</b>' + ': ' + data.location+'</span><br/>');
+    }
+
+    socket.on('location change', function(data){
+        displayMsg(data);
+    });
 
 //    var $nickForm = $('#setNick');
 //    var $nickError = $('#nickError');
