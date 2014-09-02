@@ -35,6 +35,7 @@ jQuery(function($){
     });
 
     $messageForm.submit(function(oEvent){
+
         oEvent.preventDefault();
         socket.emit('new location', $messageBox.val(), function(data){
             $chat.append('<span class="error"><b>' + data + '</span></b>');
