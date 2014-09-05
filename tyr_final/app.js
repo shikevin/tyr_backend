@@ -39,7 +39,7 @@ app.get('/', function(req, res){
     res.sendfile(__dirname + '/tyr.html')
 });
 
-io.set('log level', 2);
+//io.set('log level', 2);
 
 io.sockets.on('connection', function(socket){
 //    var query = Chat.find({});
